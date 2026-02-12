@@ -1,0 +1,32 @@
+﻿@page
+@model UsernameModel
+@{
+    ViewData["Title"] = "Change Username";
+    ViewData["ActivePage"] = ManageNavPages.Username;
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <div class="col-md-6">
+        <p>Current username: <strong>@Model.CurrentUserName</strong></p>
+
+        <form id="change-username-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.NewUserName" class="form-control" autocomplete="username" aria-required="true" placeholder="New username" />
+                <label asp-for="Input.NewUserName" class="form-label"></label>
+                <span asp-validation-for="Input.NewUserName" class="text-danger"></span>
+            </div>
+
+            <button id="change-username-button" type="submit" class="w-100 btn btn-lg btn-primary">Update username</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
