@@ -21,11 +21,13 @@ namespace GBMovieRentalSite.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -66,8 +68,8 @@ namespace GBMovieRentalSite.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            [Display(Name = "Email or Username")]
+            public string EmailOrUsername { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -112,7 +114,23 @@ namespace GBMovieRentalSite.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+                // Kolla om användaren skrev in en email eller username
+                string userName = Input.EmailOrUsername;
+
+                // Om det innehåller @, anta att det är en email
+                if (Input.EmailOrUsername.Contains("@"))
+                {
+                    // Hitta användaren via email
+                    var user = await _userManager.FindByEmailAsync(Input.EmailOrUsername);
+                    if (user != null)
+                    {
+                        userName = user.UserName; // Använd deras UserName för login
+                    }
+                }
+
+                // Logga in med UserName (som Identity kräver)
+                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");

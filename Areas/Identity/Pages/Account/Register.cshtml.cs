@@ -117,6 +117,21 @@ namespace GBMovieRentalSite.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                // Kontrollera om Username redan finns
+                var existingUserByName = await _userManager.FindByNameAsync(Input.Username);
+                if (existingUserByName != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Username is already taken.");
+                    return Page();
+                }
+
+                // Kontrollera om Email redan finns
+                var existingUserByEmail = await _userManager.FindByEmailAsync(Input.Email);
+                if (existingUserByEmail != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Email is already registered.");
+                    return Page();
+                }
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Username, CancellationToken.None);

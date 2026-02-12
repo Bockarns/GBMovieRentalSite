@@ -7,7 +7,11 @@ var connectionString = builder.Configuration.GetConnectionString("ApplicationCon
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.User.RequireUniqueEmail = true;
+                })
                 .AddEntityFrameworkStores<ApplicationContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
