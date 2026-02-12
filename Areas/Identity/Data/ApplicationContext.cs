@@ -23,7 +23,7 @@ public class ApplicationContext : IdentityDbContext<ApplicationUser>
     protected void RenameIdentityTables(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.HasDefaultSchema("CstUserMngt");
+        builder.HasDefaultSchema("MovieRental");
         builder.Entity<ApplicationUser>(entity =>
         {
             entity.ToTable(name: "Users");
