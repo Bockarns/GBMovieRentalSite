@@ -28,6 +28,8 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     await SeedData.Initialize(services);
+    var context = services.GetRequiredService<ApplicationContext>();
+    await SeedData.SeedMovies(context);
 }
 
 // Configure the HTTP request pipeline.

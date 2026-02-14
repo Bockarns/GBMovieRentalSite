@@ -1,0 +1,72 @@
+﻿@model IEnumerable<GBMovieRentalSite.Models.Movie>
+
+@{
+    ViewData["Title"] = "Movies";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="display-4">Available Movies</h1>
+            <p class="lead">Browse our collection of movies available for rent</p>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var movie in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(movie.ImageUrl))
+                    {
+                        <img src="@movie.ImageUrl" class="card-img-top" alt="@movie.Title" />
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 300px;">
+                            <i class="bi bi-film" style="font-size: 4rem; color: white;"></i>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">@movie.Title</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                @movie.Genre | @movie.ReleaseYear
+                            </small>
+                        </p>
+                        <p class="card-text">
+                            @if (movie.Description != null && movie.Description.Length > 100)
+                            {
+                                @movie.Description.Substring(0, 100)
+                                <text>...</text>
+                            }
+                            else
+                            {
+                                @movie.Description
+                            }
+                        </p>
+                    </div>
+
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0 text-primary">@movie.PricePerDay.ToString("C") / day</span>
+                            <a asp-action="Details" asp-route-id="@movie.Id" class="btn btn-outline-primary">Details</a>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            @movie.AvailableCopies of @movie.TotalCopies available
+                        </small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">No movies available</h4>
+            <p>There are currently no movies in our collection. Please check back later!</p>
+        </div>
+    }
+</div>
