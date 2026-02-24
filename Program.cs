@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using GBMovieRentalSite.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("ApplicationContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationContextConnection' not found.");;
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationContextConnection' not found.");;
 
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connectionString));
 
@@ -27,9 +27,21 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await SeedData.Initialize(services);
-    var context = services.GetRequiredService<ApplicationContext>();
-    await SeedData.SeedMovies(context);
+
+    try
+    {
+        // Initiera roller och admin
+        SeedData.Initialize(services).GetAwaiter().GetResult();
+
+        // Seeda filmer
+        var context = services.GetRequiredService<ApplicationContext>();
+        SeedData.SeedMovies(context).GetAwaiter().GetResult();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred seeding the DB.");
+    }
 }
 
 // Configure the HTTP request pipeline.
