@@ -1,0 +1,84 @@
+﻿@model IEnumerable<GBMovieRentalSite.Models.Movie>
+
+@{
+    ViewData["Title"] = "Manage Movies";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-4">Manage Movies</h1>
+            <p class="lead">Admin panel for movie management</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Create" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle"></i> Add New Movie
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Genre</th>
+                            <th>Year</th>
+                            <th>Price/Day</th>
+                            <th>Total Copies</th>
+                            <th>Available</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var movie in Model)
+                        {
+                            <tr>
+                                <td>@movie.Title</td>
+                                <td>
+                                    <span class="badge bg-primary">@movie.Genre</span>
+                                </td>
+                                <td>@movie.ReleaseYear</td>
+                                <td>@movie.PricePerDay.ToString("C")</td>
+                                <td>@movie.TotalCopies</td>
+                                <td>
+                                    @if (movie.AvailableCopies > 0)
+                                    {
+                                        <span class="badge bg-success">@movie.AvailableCopies</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">0</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@movie.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@movie.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info" role="alert">
+                    No movies found. Click "Add New Movie" to get started.
+                </div>
+            }
+        </div>
+    </div>
+</div>
