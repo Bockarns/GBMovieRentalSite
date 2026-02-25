@@ -17,4 +17,4 @@ A fullstack-project that simulates a movierental site, where users can browes th
 -Remove movies (Admin)<br>
 -Edit movies (Admin)<br>
 -Login (User and Admin)<br>
--Rent movie (Not implemented yet)<br>
+-Rent movie<br>
