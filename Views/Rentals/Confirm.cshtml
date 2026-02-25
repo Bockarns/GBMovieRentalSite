@@ -1,0 +1,71 @@
+﻿@model GBMovieRentalSite.ViewModels.RentalConfirmViewModel
+
+@{
+    ViewData["Title"] = "Confirm Rental";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="display-4">Confirm Rental</h1>
+            <hr />
+
+            <div class="alert alert-info" role="alert">
+                <h4 class="alert-heading">Please review your rental details</h4>
+                <p>Make sure all information is correct before confirming.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">@Model.MovieTitle</h3>
+
+                    <dl class="row">
+                        <dt class="col-sm-4">Genre</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-primary">@Model.MovieGenre</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Rental Period</dt>
+                        <dd class="col-sm-8">@Model.RentalDays day(s)</dd>
+
+                        <dt class="col-sm-4">Price per Day</dt>
+                        <dd class="col-sm-8">@Model.PricePerDay.ToString("C")</dd>
+
+                        <dt class="col-sm-4">Rental Date</dt>
+                        <dd class="col-sm-8">@Model.RentalDate.ToString("yyyy-MM-dd HH:mm")</dd>
+
+                        <dt class="col-sm-4">Return Date</dt>
+                        <dd class="col-sm-8">
+                            <strong>@Model.ReturnDate.ToString("yyyy-MM-dd HH:mm")</strong>
+                        </dd>
+                    </dl>
+
+                    <hr />
+
+                    <div class="bg-light p-3 rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h4 mb-0">Total Amount:</span>
+                            <span class="h2 text-success mb-0">@Model.TotalPrice.ToString("C")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <form asp-action="Process" method="post">
+                    <input type="hidden" name="movieId" value="@Model.MovieId" />
+                    <input type="hidden" name="rentalDays" value="@Model.RentalDays" />
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success btn-lg flex-fill">
+                            <i class="bi bi-check-circle"></i> Confirm Rental
+                        </button>
+                        <a asp-action="Rent" asp-route-id="@Model.MovieId" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Go Back
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

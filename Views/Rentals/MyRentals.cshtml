@@ -1,0 +1,129 @@
+﻿@model IEnumerable<GBMovieRentalSite.ViewModels.MyRentalsViewModel>
+
+@{
+    ViewData["Title"] = "My Rentals";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4">My Rentals</h1>
+    <hr />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            <h4 class="alert-heading">No rentals yet</h4>
+            <p>You haven't rented any movies yet. Browse our collection to get started!</p>
+            <hr />
+            <a asp-controller="Movies" asp-action="Index" class="btn btn-primary">Browse Movies</a>
+        </div>
+    }
+    else
+    {
+        var activeRentals = Model.Where(r => r.Status == "Active").ToList();
+        var returnedRentals = Model.Where(r => r.Status == "Returned").ToList();
+
+        @if (activeRentals.Any())
+        {
+            <h3 class="mb-3">Active Rentals</h3>
+            <div class="row mb-4">
+                @foreach (var rental in activeRentals)
+                {
+                    <div class="col-md-6 mb-3">
+                        <div class="card @(rental.IsOverdue ? "border-danger" : "")">
+                            <div class="card-body">
+                                <h5 class="card-title">@rental.MovieTitle</h5>
+                                <p class="card-text">
+                                    <span class="badge bg-primary">@rental.MovieGenre</span>
+                                    @if (rental.IsOverdue)
+                                    {
+                                        <span class="badge bg-danger">OVERDUE</span>
+                                    }
+                                </p>
+
+                                <dl class="row mb-0">
+                                    <dt class="col-sm-5">Rented:</dt>
+                                    <dd class="col-sm-7">@rental.RentalDate.ToString("yyyy-MM-dd")</dd>
+
+                                    <dt class="col-sm-5">Due back:</dt>
+                                    <dd class="col-sm-7">
+                                        <strong class="@(rental.IsOverdue ? "text-danger" : "")">
+                                            @rental.ReturnDate.ToString("yyyy-MM-dd")
+                                        </strong>
+                                    </dd>
+
+                                    <dt class="col-sm-5">Total paid:</dt>
+                                    <dd class="col-sm-7">@rental.TotalPrice.ToString("C")</dd>
+                                </dl>
+
+                                <hr />
+
+                                <form asp-action="Return" asp-route-id="@rental.RentalId" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-success w-100" onclick="return confirm('Are you sure you want to return this movie?')">
+                                        <i class="bi bi-check-circle"></i> Return Movie
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (returnedRentals.Any())
+        {
+            <h3 class="mb-3">Rental History</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Movie</th>
+                            <th>Genre</th>
+                            <th>Rented</th>
+                            <th>Returned</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rental in returnedRentals)
+                        {
+                            <tr>
+                                <td>@rental.MovieTitle</td>
+                                <td><span class="badge bg-primary">@rental.MovieGenre</span></td>
+                                <td>@rental.RentalDate.ToString("yyyy-MM-dd")</td>
+                                <td>@rental.ActualReturnDate?.ToString("yyyy-MM-dd")</td>
+                                <td>@rental.TotalPrice.ToString("C")</td>
+                                <td>
+                                    @if (rental.CanReview)
+                                    {
+                                        <span class="text-muted">Ready for review</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Reviewed</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>
